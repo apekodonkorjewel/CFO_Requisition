@@ -1,0 +1,516 @@
+Use CFO
+
+Create table Officer
+(
+	officerID int primary key,
+	surname nvarchar (60) not null,
+	otherNames nvarchar (60) not null,
+	username nvarchar (12) null,
+	psword nvarchar (12) null,
+	unit nvarchar (100) not null,
+	position nvarchar (70) not null,
+	contact nvarchar (10) not null
+)
+
+Create table Requisition
+(
+	requestID int primary key,
+	tradersName nvarchar (100) not null,
+	dateCollected date not null,
+	issuedBy nvarchar (100) not null,
+	mergedStatus nvarchar (10) not null,
+	requestCode nvarchar (10) not null,
+	serialNumber nvarchar (10) not null,
+	collectedBy nvarchar (100) not null,
+	authorizingOfficer nvarchar (100) not null,
+	receivingOfficerReq nvarchar (100) not null,
+	headOfTPS nvarchar (100) not null,
+	unit nvarchar (60),
+	purpose nvarchar (60),	
+	dateReturned date, 
+	receivedBy nvarchar (100),
+	returningOfficer nvarchar (100),
+	receivingOfficerRet nvarchar (100),
+	returnCode nvarchar (10),
+	tin nvarchar (11) not null,
+	officerID int foreign key references Officer (officerID)
+)
+
+Create table Folder
+(
+	folderID int primary key,
+	folderName nvarchar (100) not null,
+	location nvarchar (40) not null,
+	availStatus nvarchar (20) not null,
+	mergedStatus nvarchar (10) not null,
+	tin nvarchar (11) not null,
+	section nchar (5) not null	
+)
+
+Create table LogFile
+(
+	logID int primary key,
+	officerName nvarchar (100),
+	username nvarchar (12),
+	psword nvarchar (12),
+	logDate date,
+	logTime time,
+	logType nvarchar(10)
+)
+
+create table SerialCodeLog
+(
+	serialID int primary key,
+	serialNumber int,
+	requestCode int,
+	returnCode int
+)
+
+create table MonthlyReqForm
+(
+	reqID int primary key,
+	period nvarchar (20),
+
+	TCCtotal int,
+	RECtotal int,
+	LEDGtotal int, 
+	TAXPtotal int, 
+	COMPRtotal int,
+	COMPLtotal int,
+	INVtotal int, 
+	OTHERStotal int,
+
+	totalAUDIT int,
+	totalCEDM int, 
+	totalOTHERS int,
+
+	tccAUDIT int,
+	recAUDIT int,
+	ledgAUDIT int,
+	taxpAUDIT int,
+	comprAUDIT int,
+	complAUDIT int,
+	invAUDIT int,
+	othersAUDIT int,
+
+	tccCEDM int,
+	recCEDM int,
+	ledgCEDM int,
+	taxpCEDM int,
+	comprCEDM int,
+	complCEDM int,
+	invCEDM int,
+	othersCEDM int,
+
+	tccOTHERS int,
+	recOTHERS int,
+	ledgOTHERS int,
+	taxpOTHERS int,
+	comprOTHERS int,
+	complOTHERS int,
+	invOTHERS int,
+	othersOTHERS int,
+	totalTOTAL int
+)
+
+insert into SerialCodeLog
+values (1,200, 300, 400)
+
+
+Drop table MonthlyReqForm
+Drop table SerialCodeLog
+Drop table LogFile
+Drop table Folder
+Drop table Requisition
+Drop table Officer
+
+
+
+
+ 
+Create procedure InsertCFOOfficer
+@officerID int,
+@surname nvarchar(60), 
+@otherNames nvarchar (60), 
+@username nvarchar (12), 
+@psword nvarchar (12), 
+@unit nvarchar (100),
+@position nvarchar (50),
+@contact nvarchar (10)
+
+as begin
+	insert into Officer
+	values 
+	(@officerID, @surname, @otherNames, @username, @psword, @unit, @position, @contact)
+end
+
+
+
+
+
+Create procedure InsertOtherOfficer
+@officerID int,
+@surname nvarchar(60), 
+@otherNames nvarchar (60), 
+@unit nvarchar (100),
+@position nvarchar (50),
+@contact nvarchar (10)
+
+as begin
+	insert into Officer (officerID, surname, otherNames, unit, position, contact)
+	values 
+	(@officerID, @surname, @otherNames, @unit, @position, @contact)
+end
+
+
+
+
+
+create procedure ModifyCFOOfficer 
+@surname nvarchar (60), 
+@otherNames nvarchar (60), 
+@position nvarchar (50), 
+@username nvarchar (12), 
+@psword nvarchar (12), 
+@unit nvarchar (100),
+@contact nvarchar (10),
+@officerID int
+
+as begin
+	Update Officer
+	set
+	surname = @surname,
+	otherNames = @otherNames,
+	position = @position,
+	username = @username,
+	psword = @psword,
+	contact = @contact,
+	unit = @unit
+
+	where officerID = @officerID
+end
+
+create procedure ModifyOtherOfficer 
+@surname nvarchar (60), 
+@otherNames nvarchar (60), 
+@position nvarchar (50), 
+@unit nvarchar(100),
+@contact nvarchar (10),
+@officerID int
+
+as begin
+	Update Officer
+	set
+	surname = @surname,
+	otherNames = @otherNames,
+	position = @position,
+	unit = @unit,
+	contact = @contact
+
+	where officerID = @officerID
+end
+
+
+
+
+create procedure DeleteOfficer 
+@officerID int 
+
+as begin
+	Delete from Officer where officerID = @officerID
+end
+
+
+
+Create procedure InsertLog
+@logID int,
+@officerName nvarchar(100),
+@username nvarchar (12),
+@psword nvarchar(12),
+@logDate date,
+@logTime nvarchar(11),
+@logType nvarchar(10)
+
+as begin
+	insert into LogFile
+	values(@logID, @officerName, @username, @psword, @logDate, @logTime, @logType)
+end
+
+
+
+
+
+
+Create procedure InsertFolder
+@folderID int,
+@folderName nvarchar (100),
+@location nvarchar(40),
+@availStatus nvarchar (20),
+@mergedStatus nvarchar (10),
+@tin nvarchar (11),
+@section nchar (5)
+
+as begin
+	insert into Folder
+	values(@folderID, @folderName, @location, @availStatus, @mergedStatus, @tin, @section)
+end
+
+
+
+
+
+create procedure ModifyFolder
+@section nchar(5),
+@folderName nvarchar(100),
+@location nvarchar (40),
+@availStatus nvarchar(20),
+@mergedStatus nvarchar (10),
+@tin nvarchar (11),
+@folderID int
+
+as begin
+	update Folder 
+	set 
+		folderName = @folderName,
+		availStatus = @availStatus,
+		location = @location,
+		section = @section,
+		mergedStatus = @mergedStatus,
+		tin = @tin
+	where folderID = @folderID
+end
+
+
+	
+
+create procedure DeleteFolder
+@folderID int
+
+as begin
+	Delete from Folder
+	where folderID = @folderID
+end	
+	
+
+create procedure RequestFolder
+@requestID int,
+@tradersName nvarchar(100), 
+@dateCollected date, 
+@issuedBy nvarchar (100), 
+@mergedStatus nvarchar (10), 
+@requestCode nvarchar (10), 
+@serialNumber nvarchar (10), 
+@collectedBy nvarchar (100),
+@authorizingOfficer nvarchar (100), 
+@receivingOfficerReq nvarchar (100), 
+@headOfTPS nvarchar(100),
+@unit nvarchar (60),
+@purpose nvarchar (60), 
+@tin nvarchar (11),
+@officerID int
+
+as begin
+	insert into Requisition (requestID, tradersName, dateCollected, issuedBy, mergedStatus, requestCode, serialNumber, collectedBy, authorizingOfficer, receivingOfficerReq, headOfTPS, unit, purpose, tin, officerID)
+	values (@requestID, @tradersName, @dateCollected, @issuedBy, @mergedStatus, @requestCode, @serialNumber, @collectedBy, @authorizingOfficer, @receivingOfficerReq, @headOfTPS, @unit, @purpose, @tin, @officerID) 
+end
+
+
+
+
+create procedure UpdateSerialCodeLog
+@serialID int,
+@serialNumber int, 
+@requestCode int
+
+as begin
+	update SerialCodeLog 
+	set 
+		serialNumber = @serialNumber,
+		requestCode = @requestCode
+	where serialID = @serialID
+end
+
+
+
+create procedure MakeFolderUnavailable
+@folderID int,
+@availStatus nvarchar(20)
+
+as begin
+	update Folder
+	set availStatus = @availStatus
+	where folderID = @folderID
+end
+
+
+create procedure MakeFolderAvailable
+@folderID int,
+@availStatus nvarchar(20)
+
+as begin
+	update Folder
+	set availStatus = @availStatus
+	where folderID = @folderID
+end
+
+
+create procedure ReturnFolder
+@returnCode nvarchar (10), 
+@dateReturned date, 
+@receivedBy nvarchar (100), 
+@tradersName nvarchar (100),
+@returningOfficer nvarchar (100),
+@receivingOfficerRet nvarchar (100)
+
+as begin
+	Update Requisition
+		set 
+		returnCode = @returnCode,
+		dateReturned = @dateReturned,
+		receivedBy = @receivedBy,
+		returningOfficer = @returningOfficer,
+		receivingOfficerRet = @receivingOfficerRet
+
+		where tradersName = @tradersName and returnCode is null
+end
+
+
+
+
+create procedure UpdateReturnCodeLog 
+@serialID int, 
+@returnCode int 
+
+as begin
+	Update SerialCodeLog
+	set returnCode = @returnCode
+	where serialID = @serialID
+end
+
+
+create procedure repRequisitionBookUsingReqDate
+@beginDate date,
+@endDate date
+as
+begin
+	select tradersName, dateCollected, issuedBy, mergedStatus, requestCode, serialNumber, collectedBy, unit, purpose, dateReturned, receivedBy, returnCode from Requisition
+	where dateCollected between @beginDate and @endDate
+end 
+
+
+
+create procedure repRequisitionBookUsingOfficer
+@collectedBy nvarchar(100)
+as
+begin
+	select tradersName, dateCollected, issuedBy, mergedStatus, requestCode, serialNumber, collectedBy, unit, purpose, dateReturned, receivedBy, returnCode from Requisition
+	where collectedBy = @collectedBy and dateReturned is null
+end 
+
+
+
+
+
+create procedure repLoginDetailsBook
+@beginDate date,
+@endDate date
+as begin
+	select logID, officerName, logDate, logTime, logType from LogFile
+	where logDate between @beginDate and @endDate
+end 
+
+
+
+create procedure InsertMonthlyReq
+@reqID int,
+@period nvarchar(20),
+@TCCtotal int,
+@RECtotal int,
+@LEDGtotal int, 
+@TAXPtotal int, 
+@COMPRtotal int,
+@COMPLtotal int,
+@INVtotal int, 
+@OTHERStotal int,
+
+@totalAUDIT int,
+@totalCEDM int, 
+@totalOTHERS int,
+
+@tccAUDIT int,
+@recAUDIT int,
+@ledgAUDIT int,
+@taxpAUDIT int,
+@comprAUDIT int,
+@complAUDIT int,
+@invAUDIT int,
+@othersAUDIT int,
+
+@tccCEDM int,
+@recCEDM int,
+@ledgCEDM int,
+@taxpCEDM int,
+@comprCEDM int,
+@complCEDM int,
+@invCEDM int,
+@othersCEDM int,
+
+@tccOTHERS int,
+@recOTHERS int,
+@ledgOTHERS int,
+@taxpOTHERS int,
+@comprOTHERS int,
+@complOTHERS int,
+@invOTHERS int,
+@othersOTHERS int,
+@totalTOTAL int
+
+as begin
+	insert into MonthlyReqForm
+	values (@reqID, @period, @TCCtotal, @RECtotal, @LEDGtotal, @TAXPtotal, @COMPRtotal, @COMPLtotal, @INVtotal, @OTHERStotal, @totalAUDIT,
+			@totalCEDM, @totalOTHERS, @tccAUDIT, @recAUDIT, @ledgAUDIT, @taxpAUDIT, @comprAUDIT, @complAUDIT, @invAUDIT, @othersAUDIT,
+			@tccCEDM, @recCEDM, @ledgCEDM, @taxpCEDM, @comprCEDM, @complCEDM, @invCEDM, @othersCEDM, @tccOTHERS, @recOTHERS, @ledgOTHERS,
+			@taxpOTHERS, @comprOTHERS, @complOTHERS, @invOTHERS, @othersOTHERS, @totalTOTAL)
+End
+
+
+
+create procedure repMonthlyReqForm
+@reqID int
+
+as begin
+	select  period, TCCtotal, RECtotal, LEDGtotal, TAXPtotal, COMPRtotal, COMPLtotal, INVtotal, OTHERStotal, totalAUDIT,
+			totalCEDM, totalOTHERS, tccAUDIT, recAUDIT, ledgAUDIT, taxpAUDIT, comprAUDIT, complAUDIT, invAUDIT, othersAUDIT,
+			tccCEDM, recCEDM, ledgCEDM, taxpCEDM, comprCEDM, complCEDM, invCEDM, othersCEDM, tccOTHERS, recOTHERS, ledgOTHERS,
+			taxpOTHERS, comprOTHERS, complOTHERS, invOTHERS, othersOTHERS, totalTOTAL from MonthlyReqForm
+
+	where reqID = @reqID
+end
+
+
+
+
+drop procedure repMonthlyReqForm
+drop procedure InsertMonthlyReq
+drop procedure repLoginDetailsBook
+drop procedure repRequisitionBookUsingOfficer
+drop procedure repRequisitionBookUsingReqDate
+drop procedure UpdateReturnCodeLog 
+drop procedure ReturnFolder
+drop procedure MakeFolderAvailable
+drop procedure MakeFolderUnavailable
+drop procedure UpdateSerialCodeLog
+drop procedure RequestFolder
+drop procedure DeleteFolder
+drop procedure ModifyFolder
+drop procedure InsertFolder
+drop procedure InsertLog
+drop procedure DeleteOfficer 
+drop procedure ModifyOtherOfficer
+drop procedure ModifyCFOOfficer
+drop procedure InsertOtherOfficer
+drop procedure InsertCFOOfficer
+
+
+
+
